@@ -1,0 +1,142 @@
+package javaPackage;
+
+import java.util.List;
+import java.util.Random;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.Wait;
+
+public class AmazonTestCode {
+	
+	public static void main(String[]args){
+
+		System.setProperty("webdriver.chrome.driver","F:\\Software Folder\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
+	
+				
+				WebDriver driver = new ChromeDriver();
+
+		driver.get("https://www.amazon.com");
+
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+		driver.manage().deleteAllCookies();
+
+		WebElement searchBox = driver.findElement(By.xpath(//*[@id='twotabsearchtextbox']));
+
+		searchBox.sendKeys("AmazonBasics");
+
+		WebElement ABasicsText = driver.findElement(By.xpath(//*[@class="a-section a-spacing-none"])/div/span[2]);
+				
+		if(ABasicsText.getText().contains("amazonbasics"))
+		{
+
+		System.out.println("Result for Amozon basics is displayed on page");
+
+		} 
+	else
+		{
+
+		System.out.println("Result for Amozon basics is not displayed as expected");
+
+		WebElement AmozonBasicscheckBox = ChromeDriver.findElement(By.xpath((//*[@class="a-checkbox a-checkbox-fancy s-navigation-checkbox aok-float-left"])[3]); AmozonBasicscheckBox.click();
+
+		String productName = "20W One-Port USB-C Wall Charger with Power Delivery PD for Tablets & Phones (iPhone 15/14/13/12/11/X, iPad, Samsung, and more), non-PPS, 1.81 x 1.73 x 1.09 inches, White";
+
+		            boolean productFound = false;
+		            String productPrice = "";
+
+		            // Pagination logic to find the product
+		            while (!productFound) {
+		                // Wait for search results to load
+		                Wait.until(ExpectedCondition.visibilityOfElementLocated(By.xpath("//div[@data-component-type='s-search-result']")));
+
+		                // Get the list of product titles on the current page
+		                List<WebElement> productElements = ChromeDriver.findElements(By.xpath("//div[@data-component-type='s-search-result']"));
+
+		                // Iterate through the product elements to find the desired product
+		                for (WebElement productElement : productElements) {
+		                    WebElement titleElement = productElement.findElement(By.xpath(".//span[@class='a-size-medium a-color-base a-text-normal']"));
+		                    if (titleElement.getText().contains(productName)) {
+		                        productFound = true;
+		                        // Get the product price without opening the product page
+		                        WebElement priceElement = productElement.findElement(By.xpath(".//span[@class='a-price-whole']"));
+		                        productPrice = priceElement.getText();
+		                        // Click on the product to open its detail page
+		                        titleElement.click();
+		                        break;
+		                    }
+		                }
+
+		                // If the product is not found on the current page, navigate to the next page
+		                if (!productFound) {
+		                    WebElement nextPageButton = ChromeDriver.findElement(By.xpath("//li[@class='a-last']/a"));
+		                    if (nextPageButton != null) {
+		                        nextPageButton.click();
+		                    } else {
+		                        System.out.println("No more pages available and the product was not found.");
+		                        break;
+		                    }
+		                }
+		            }
+
+		            // If the product was found, perform the next steps
+		            if (productFound) {
+		                System.out.println("Product found and selected.");
+		                // Verify that the product page is displayed
+		                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@id='productTitle']")));
+		                WebElement productTitleElement = driver.findElement(By.xpath("//span[@id='productTitle']"));
+		                if (productTitleElement.getText().contains(productName)) {
+		                    System.out.println("Product page is displayed.");
+
+		                    // Verify the price on the product details page
+		                    WebElement productPagePriceElement = driver.findElement(By.xpath("//span[@class='a-price-whole']"));
+		                    String productPagePrice = productPagePriceElement.getText();
+		                    if (productPrice.equals(productPagePrice)) {
+		                        System.out.println("Prices match: " + productPrice);
+		                    } else {
+		                        System.out.println("Prices do not match. Listed price: " + productPrice + ", Product page price: " + productPagePrice);
+		                    }
+
+		                    // Select a random quantity from the 'Qty' dropdown
+		                    Select quantityDropdown = new Select(driver.findElement(By.xpath("//select[@id='quantity']")));
+		                    List<WebElement> options = quantityDropdown.getOptions();
+		                    Random random = new Random();
+		                    int randomQuantityIndex = random.nextInt(options.size());
+		                    quantityDropdown.selectByIndex(randomQuantityIndex);
+		                    int selectedQuantity = Integer.parseInt(options.get(randomQuantityIndex).getText());
+		                    System.out.println("Selected quantity: " + selectedQuantity);
+
+		                    // Click on 'Add to Cart' button
+		                    WebElement addToCartButton = driver.findElement(By.xpath("//input[@id='add-to-cart-button']"));
+		                    addToCartButton.click();
+
+		                    // Verify the randomly selected item quantity added in cart
+		                    wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@id='nav-cart-count']")));
+		                    WebElement cartCountElement = driver.findElement(By.xpath("//span[@id='nav-cart-count']"));
+		                    int cartCount = Integer.parseInt(cartCountElement.getText());
+		                    if (cartCount == selectedQuantity) {
+		                        System.out.println("Cart count matches the selected quantity: " + selectedQuantity);
+		                    } else {
+		                        System.out.println("Cart count does not match the selected quantity. Expected: " + selectedQuantity + ", Found: " + cartCount);
+		                    }
+		                } else {
+		                    System.out.println("Product page is not displayed as expected.");
+		                }
+		            }
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        } 
+		        
+		        finally 
+		        {
+		            // Close the browser
+		            driver.quit();
+		        }
+		    }
+		}
+
+}
